@@ -15,7 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from djangodemos.cropper import views as cropper_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('cropper/', cropper_views.upload_photo,name="cropper-upload"),
+    
 ]

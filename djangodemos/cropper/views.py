@@ -1,0 +1,25 @@
+from django.shortcuts import render
+
+# Create your views here.
+def upload_photo(request):
+    pass
+
+
+
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from .forms import UploadPhotoForm
+
+# Imaginary function to handle an uploaded file.
+def handle_uploaded_file(photo):
+    print(photo)
+
+def upload_photo(request):
+    if request.method == 'POST':
+        form = UploadPhotoForm(request.POST, request.FILES)
+        if form.is_valid():
+            handle_uploaded_file(request.FILES['file'])
+            return HttpResponseRedirect('/success/url/')
+    else:
+        form = UploadPhotoForm()
+    return render(request, 'cropper/upload_photo.html', {'form': form})
