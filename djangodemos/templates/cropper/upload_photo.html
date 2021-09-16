@@ -20,7 +20,7 @@
     hx-post="{% url 'cropper-image-change' %}" hx-trigger="change" hx-target="#parent-div"
     />
 
-    <div id="parent-div"></div> 
+    <div id="parent-div" class="w-1/2"></div> 
     
     <form id='form' hx-encoding='multipart/form-data' hx-post='/upload_photo_before_crop'>
         
@@ -67,9 +67,11 @@
   })
 </script>
 
-<script>
 
-    const image = document.getElementById('image');
+
+    <script>
+  document.body.addEventListener('htmx:afterSettle', function(evt) {
+    const image = document.getElementById('image_pre_crop');
     const cropper = new Cropper(image, {
       aspectRatio: 16 / 9,
       crop(event) {
@@ -81,20 +83,15 @@
         console.log(event.detail.scaleX);
         console.log(event.detail.scaleY);
       },
-    });</script>
-
-    <script>
-        const inputElement = document.getElementById("input");
-inputElement.addEventListener("change", handleFiles, false);
-function handleFiles() {
-  const file = this.files[0];
-  const objectURL = URL.createObjectURL(file)
-   /* now you can work with the file list */
-  console.log('changedcccc')
-}
+    });
+});
 
 
     </script>
-
+<script>htmx.logger = function(elt, event, data) {
+  if(console) {
+      console.log(event, elt, data);
+  }
+}</script>
 </body>
 </html>
