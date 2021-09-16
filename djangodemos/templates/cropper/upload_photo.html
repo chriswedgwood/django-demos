@@ -1,4 +1,40 @@
+
+{% load static %}
 {% load tailwind_filters %}
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/htmx.org@1.5.0" integrity="sha384-oGA+prIp5Vchu6we2YkI51UtVzN9Jpx2Z7PnR1I78PnZlN8LkrCT4lqqqmDkyrvI" crossorigin="anonymous"></script>
+  
+
+</head>
+
+
+<body>
+    <label for="q">Test upload</label>
+    <input name="q" type="file" hx-encoding='multipart/form-data'
+    hx-post="{% url 'cropper-image-change' %}" hx-trigger="change" hx-target="#parent-div"
+    />
+
+    <div id="parent-div"></div> 
+    
+    <form id='form' hx-encoding='multipart/form-data' hx-post='/upload_photo_before_crop'>
+        
+        <input id="input" type='file' name='file' class='tfile' >
+        <button>
+            Upload
+        </button>
+        <progress id='progress' value='0' max='100'></progress>
+    </form>
+    <script>
+        htmx.on('#form', 'htmx:xhr:progress', function(evt) {
+          htmx.find('#progress').setAttribute('value', evt.detail.loaded/evt.detail.total * 100)
+        });
+    </script>   
 
 <form method="post" action="{% url 'cropper-upload' %}" enctype="multipart/form-data">
     {% csrf_token %}
@@ -7,5 +43,58 @@
      Save
     </button>
 
-
+    <div class="w-1/12">
+        <img  id="image" src="{% static 'images/photo.jpg' %}">
+      </div>
 </form>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js" integrity="sha512-ooSWpxJsiXe6t4+PPjCgYmVfr1NS5QXJACcR/FPpsdm6kqG1FmQ2SVyg2RXeVuCRBLr0lWHnWJP6Zs1Efvxzww==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" integrity="sha512-0SPWAwpC/17yYyZ/4HSllgaK7/gg9OlVozq8K7rf3J8LvCjYEEIfzzpnA2/SSjpGIunCSD18r3UhvDcu/xncWA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+<style>/* Ensure the size of the image fit the container perfectly */
+    img {
+      display: block;
+    
+      /* This rule is very important, please don't ignore this */
+      max-width: 100%;
+    }</style>
+<script>
+  document.body.addEventListener('htmx:configRequest', (event) => {
+    event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+    console.log("tets")
+  })
+</script>
+
+<script>
+
+    const image = document.getElementById('image');
+    const cropper = new Cropper(image, {
+      aspectRatio: 16 / 9,
+      crop(event) {
+        console.log(event.detail.x);
+        console.log(event.detail.y);
+        console.log(event.detail.width);
+        console.log(event.detail.height);
+        console.log(event.detail.rotate);
+        console.log(event.detail.scaleX);
+        console.log(event.detail.scaleY);
+      },
+    });</script>
+
+    <script>
+        const inputElement = document.getElementById("input");
+inputElement.addEventListener("change", handleFiles, false);
+function handleFiles() {
+  const file = this.files[0];
+  const objectURL = URL.createObjectURL(file)
+   /* now you can work with the file list */
+  console.log('changedcccc')
+}
+
+
+    </script>
+
+</body>
+</html>
