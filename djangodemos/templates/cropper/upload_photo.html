@@ -15,37 +15,41 @@
 
 
 <body>
-    <label for="q">Test upload</label>
-    <input name="q" type="file" hx-encoding='multipart/form-data'
-    hx-post="{% url 'cropper-image-change' %}" hx-trigger="change" hx-target="#parent-div"
-    />
+   
 
-    <div id="parent-div" class="w-1/2"></div> 
-    
-    <form id='form' hx-encoding='multipart/form-data' hx-post='/upload_photo_before_crop'>
-        
-        <input id="input" type='file' name='file' class='tfile' >
-        <button>
-            Upload
-        </button>
-        <progress id='progress' value='0' max='100'></progress>
-    </form>
-    <script>
-        htmx.on('#form', 'htmx:xhr:progress', function(evt) {
-          htmx.find('#progress').setAttribute('value', evt.detail.loaded/evt.detail.total * 100)
-        });
-    </script>   
+
 
 <form method="post" action="{% url 'cropper-upload' %}" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form|crispy }}
+	<div class="mt-1 sm:mt-0 sm:col-span-2">
+		<div class="flex items-center">
+		  <span class="h-12 w-12 rounded-full overflow-hidden bg-gray-100">
+			<div id="cropped-image-box">
+
+			<svg class="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+			  <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z"></path>
+			</svg>
+		</div>
+			<input id="profile-photo-upload" name="profile-photo-upload" type="file" class="sr-only">
+		  </span>
+		  <button type="button" onclick="performClick('profile-photo-upload')" class="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+			Change
+		  </button>
+		</div>
+	  </div>
+   
+    <div class="form-group">
+      <div id="image-box" class="image-container w-1/6"></div>
+
+      <button class="btn btn-outline-info" id="crop-button" style="width: 100%; margin-top: 10px; display: none;" type="button">Crop</button>
+      <button class="btn btn-outline-info" id="confirm-button" style="width: 100%; margin-top: 10px;" type="submit">Post</button>
+    </div>
     <button type="submit" class="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-torq hover:bg-torqlight">
      Save
     </button>
+   
 
-    <div class="w-1/12">
-        <img  id="image" src="{% static 'images/photo.jpg' %}">
-      </div>
+    
 </form>
 
 
@@ -56,42 +60,72 @@
 <style>/* Ensure the size of the image fit the container perfectly */
     img {
       display: block;
-    
       /* This rule is very important, please don't ignore this */
       max-width: 100%;
     }</style>
+
+
+
 <script>
-  document.body.addEventListener('htmx:configRequest', (event) => {
-    event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
-    console.log("tets")
-  })
+	
+	const imageBox = document.getElementById('image-box')
+	const croppedImageBox = document.getElementById('cropped-image-box')
+    const cropButton = document.getElementById('crop-button')
+	const input = document.getElementById('profile-photo-upload')
+
+	input.addEventListener('change', ()=>{
+	
+	  const imageData = input.files[0]
+	  const url = URL.createObjectURL(imageData)
+	  imageBox.innerHTML = `<img src="${url}" id="image" style="width:100%;">`
+	  const image = document.getElementById('image')
+	  document.getElementById('image-box').style.display = 'block'
+	  document.getElementById('crop-button').style.display = 'block'
+	  document.getElementById('confirm-button').style.display = 'none'
+
+	  const cropper = new Cropper(image, {
+	  autoCropArea: 1,
+	  viewMode: 1,
+	  scalable: false,
+	  zoomable: false,
+	  movable: false,
+	  minCropBoxWidth: 200,
+	  minCropBoxHeight: 200,
+	  })
+
+	  
+	  cropButton.addEventListener('click', ()=>{
+	    
+	    cropper.getCroppedCanvas().toBlob((blob)=>{
+	      let fileInputElement = document.getElementById('profile-photo-upload');
+	      let file = new File([blob], imageData.name,{type:"image/*", lastModified:new Date().getTime()});
+	      let container = new DataTransfer();
+	      container.items.add(file);
+	      fileInputElement.files = container.files;
+//
+		  const croppedImageData = file
+			const croppedUrl = URL.createObjectURL(croppedImageData)
+			croppedImageBox.innerHTML = `<img src="${croppedUrl}" id="cropped-image" style="width:100%;">`
+			
+
+	      document.getElementById('image-box').style.display = 'none'
+	      document.getElementById('crop-button').style.display = 'none'
+	      document.getElementById('confirm-button').style.display = 'block'
+	      });
+	    });
+	});	
 </script>
 
+<script type="text/javascript">
+	function performClick(elemId) {
+	   var elem = document.getElementById(elemId);
+	   if(elem && document.createEvent) {
+		  var evt = document.createEvent("MouseEvents");
+		  evt.initEvent("click", true, false);
+		  elem.dispatchEvent(evt);
+	   }
+	}
+	</script>
 
-
-    <script>
-  document.body.addEventListener('htmx:afterSettle', function(evt) {
-    const image = document.getElementById('image_pre_crop');
-    const cropper = new Cropper(image, {
-      aspectRatio: 16 / 9,
-      crop(event) {
-        console.log(event.detail.x);
-        console.log(event.detail.y);
-        console.log(event.detail.width);
-        console.log(event.detail.height);
-        console.log(event.detail.rotate);
-        console.log(event.detail.scaleX);
-        console.log(event.detail.scaleY);
-      },
-    });
-});
-
-
-    </script>
-<script>htmx.logger = function(elt, event, data) {
-  if(console) {
-      console.log(event, elt, data);
-  }
-}</script>
 </body>
 </html>

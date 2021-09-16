@@ -22,7 +22,6 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('cropper/', cropper_views.upload_photo,name="cropper-upload"),
-    path('cropper/image_change', cropper_views.image_change,name="cropper-image-change"),
 
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

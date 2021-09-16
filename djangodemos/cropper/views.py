@@ -33,11 +33,4 @@ def upload_photo(request):
     return render(request, 'cropper/upload_photo.html', {'form': form})
 
 
-def image_change(request):
-    folder = 'images/'
-    myfile = request.FILES['q']
-    fs = FileSystemStorage() #defaults to   MEDIA_ROOT  
-    filename = fs.save(myfile.name, myfile)
-    file_url = fs.url(filename)
-    return render(request, "cropper/upload_image.html", {'file_url':file_url})
 
