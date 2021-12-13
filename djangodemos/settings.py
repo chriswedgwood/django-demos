@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'djangodemos.cropper.apps.CropperConfig',
     "crispy_forms",
     "crispy_tailwind",
+    "modelplayground",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
