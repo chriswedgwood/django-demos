@@ -2,6 +2,8 @@
 
 from django.db import migrations
 from datetime import date
+from django.utils import timezone
+import csv
 
 
 class Migration(migrations.Migration):
@@ -14,7 +16,19 @@ class Migration(migrations.Migration):
         # We can't import the Person model directly as it may be a newer
         # version than this migration expects. We use the historical version.
         Question = apps.get_model("playground", "Question")
-        Question.objects.create(question_text="Q1", pub_date=date.today())
+        Choice = apps.get_model("playground", "Choice")
+
+        with open("playground/migrations/data/questions.csv", newline="") as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                print(row)
+                question = Question.objects.create(
+                    question_text=row["Question"], pub_date=timezone.now()
+                )
+                Choice.objects.create(question=question, choice_text=row["A"], votes=0)
+                Choice.objects.create(question=question, choice_text=row["B"], votes=1)
+                Choice.objects.create(question=question, choice_text=row["C"], votes=2)
+                Choice.objects.create(question=question, choice_text=row["D"], votes=3)
 
     operations = [
         migrations.RunPython(create_questions_answers),
