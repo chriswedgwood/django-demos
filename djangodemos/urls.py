@@ -16,12 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from djangodemos.cropper import views as cropper_views
+from djangodemos.home import views as home_views
 from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('cropper/', cropper_views.upload_photo,name="cropper-upload"),
-
-    
+    path("", home_views.home_view, name="home"),
+    path("admin/", admin.site.urls),
+    path("cropper/", cropper_views.upload_photo, name="cropper-upload"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

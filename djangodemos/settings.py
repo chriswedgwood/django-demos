@@ -38,6 +38,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "djangodemos.home.apps.HomeConfig",
     "djangodemos.cropper.apps.CropperConfig",
     "crispy_forms",
     "crispy_tailwind",
