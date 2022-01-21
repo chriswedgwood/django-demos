@@ -31,7 +31,7 @@ if env_file.exists():
 SECRET_KEY = "django-insecure-5(uykuhfr&unu*aggg4&37ske3vai+1!b)bg^e5n%pe%j050$1"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["django-demos-h8kkx.ondigitalocean.app"]
 
