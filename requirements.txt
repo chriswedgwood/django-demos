@@ -6,4 +6,4 @@ django-environ==0.8.1 # https://django-environ.readthedocs.io/en/latest/
 django-extensions==3.1.5  # https://github.com/django-extensions/django-extensions/blob/main/docs/index.rst
 ipython==7.31.0  # https://github.com/ipython/ipython
 factory-boy==3.2.0  # https://github.com/FactoryBoy/factory_boy
-gunicorn==0.1.0 # https://github.com/benoitc/gunicorn
+gunicorn==20.1.0 # https://github.com/benoitc/gunicorn
